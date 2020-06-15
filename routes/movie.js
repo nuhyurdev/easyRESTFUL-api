@@ -4,7 +4,22 @@ const Movie = require("../models/Movie");
 
 // GET movie List
 router.get("/getall", (req, res) => {
-  const promise = Movie.find({});
+  const promise = Movie.aggregate([
+    {
+      $lookup:{
+        from:"directors",
+        localField:"director_id",
+        foreignField:"_id",
+        as:"director"
+      }
+      },
+      {
+        $unwind:{
+          path:"$director",
+          preserveNullAndEmptyArrays : true
+      }
+      }
+  ]);
   promise
   
     .then((data) => {
