@@ -6,22 +6,22 @@ const Movie = require("../models/Movie");
 router.get("/getall", (req, res) => {
   const promise = Movie.aggregate([
     {
-      $lookup:{
-        from:"directors",
-        localField:"director_id",
-        foreignField:"_id",
-        as:"director"
-      }
+      $lookup: {
+        from: "directors",
+        localField: "director_id",
+        foreignField: "_id",
+        as: "director",
       },
-      {
-        $unwind:{
-          path:"$director",
-          preserveNullAndEmptyArrays : true
-      }
-      }
+    },
+    {
+      $unwind: {
+        path: "$director",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
   ]);
   promise
-  
+
     .then((data) => {
       res.json(data);
     })
@@ -39,31 +39,32 @@ router.post("/", (req, res, next) => {
   movie.save((err, data) => {
     if (err) res.json(err);
 
-    res.json({ status: 1 });
+    res.json(data);
   });
 });
- //between 
+//between
 
- router.get("/between/:start_year/:end_year",(req,res)=>{
-   const promise = Movie.find(
-     {
-     year:{"$gte":parseInt(req.params.start_year),"$lte":parseInt(req.params.end_year)}
-    }
-   )
- promise
- .then((data)=>{
-   res.json(data)
- })
- .catch((err)=>{
-   res.json(err)
- })
-  })
+router.get("/between/:start_year/:end_year", (req, res) => {
+  const promise = Movie.find({
+    year: {
+      $gte: parseInt(req.params.start_year),
+      $lte: parseInt(req.params.end_year),
+    },
+  });
+  promise
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
 
 //TOP 10 List
 router.get("/top10", (req, res) => {
-  const promise = Movie.find({}).limit(10).sort({imdb_score:-1});
+  const promise = Movie.find({}).limit(10).sort({ imdb_score: -1 });
   promise
-  
+
     .then((data) => {
       res.json(data);
     })
@@ -73,53 +74,49 @@ router.get("/top10", (req, res) => {
 });
 
 //GET movie with id
-router.get('/:movie_id', (req, res) => {
+router.get("/:movie_id", (req, res) => {
+  const promise = Movie.findById(req.params.movie_id);
 
-  const promise = Movie.findById(req.params.movie_id)
-  
   promise
-  .then((movie)=>{
-    if (!movie) {
-      console.log("yok")
-    }
-    res.json(movie)
-  })
-  .catch((err)=>{
-    //console.log("yok")
-    res.json({"error":err})
-  })
+    .then((movie) => {
+      if (!movie) {
+        console.log("yok");
+      }
+      res.json(movie);
+    })
+    .catch((err) => {
+      //console.log("yok")
+      res.json({ error: err });
+    });
 });
 
 //UPDATE movie with id
-router.put('/:movie_id', (req, res) => {
+router.put("/:movie_id", (req, res) => {
+  const promise = Movie.findByIdAndUpdate(req.params.movie_id, req.body, {
+    new: true,
+  });
 
-  const promise = Movie.findByIdAndUpdate(req.params.movie_id,req.body,{new:true})
-  
   promise
-  .then((movie)=>{
-   
-    res.json(movie)
-  })
-  .catch((err)=>{
-    //console.log("yok")
-    res.json({"error":err})
-  })
+    .then((movie) => {
+      res.json(movie);
+    })
+    .catch((err) => {
+      //console.log("yok")
+      res.json({ error: err });
+    });
 });
-router.delete('/:movie_id', (req, res) => {
+//DELETE movie
+router.delete("/:movie_id", (req, res) => {
+  const promise = Movie.findByIdAndRemove(req.params.movie_id);
 
-  const promise = Movie.findByIdAndRemove(req.params.movie_id)
-  
   promise
-  .then((movie)=>{
-   
-    res.json(movie);
-    
-  })
-  .catch((err)=>{
-    console.log("yok")
-    res.json({"error":err})
-  })
+    .then((movie) => {
+      res.json({status:1});
+    })
+    .catch((err) => {
+      console.log("yok");
+      res.json({ error: err });
+    });
 });
-
 
 module.exports = router;

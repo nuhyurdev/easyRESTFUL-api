@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 module.exports = ()=>{
-mongoose.connect('mongodb+srv://<username>:<password>@myfirstcluster-nfet9.mongodb.net/easyrestful?retryWrites=true&w=majority',{useNewUrlParser:true,useUnifiedTopology:true,useFindAndModify:false})
+mongoose.connect('mongodb+srv://<username>:<password>@myfirstcluster-nfet9.mongodb.net/easyrestful?retryWrites=true&w=majority',{useNewUrlParser:true,useUnifiedTopology:true,useFindAndModify:false,useCreateIndex:true})
 mongoose.connection.on('open',()=>{
     console.log("connection: on")
 });
